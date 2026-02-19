@@ -1,0 +1,20 @@
+name: Scraper
+on:
+  schedule: [{ cron: '0 */6 * * *' }]
+  workflow_dispatch:
+jobs:
+  scrape:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with: { node-version: '20' }
+      - run: npm install && node index.js
+      - run: node notify.js
+        env: { DISCORD_WEBHOOK: ${{ secrets.DISCORD_WEBHOOK }} }
+      - run: |
+          git config user.name "Bot"
+          git config user.email "bot@noreply.com"
+          git add output/old_games.json || exit 0
+          git commit -m "Update list" || exit 0
+          git push
