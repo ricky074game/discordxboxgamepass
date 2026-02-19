@@ -1,0 +1,7 @@
+{
+  "markets": ["US"],
+  "language": "en-us",
+  "platformsToFetch": ["console", "pc"],
+  "outputFormat": "array",
+  "includedProperties": { "productTitle": true }
+}
