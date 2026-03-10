@@ -11,12 +11,17 @@ const newGames = [
 
 const added = newGames.filter(g => g && !oldGames.includes(g));
 
-if (added.length > 0 && webhook) {
-    fetch(webhook, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ content: `**New Game Pass Drop:**\n${added.join('\n')}` })
-    });
+async function main() {
+    if (added.length > 0 && webhook) {
+        const res = await fetch(webhook, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ content: `**New Game Pass Drop:**\n${added.join('\n')}` })
+        });
+        if (!res.ok) throw new Error(`Webhook request failed: ${res.status}`);
+    }
+    if (!fs.existsSync('./output')) fs.mkdirSync('./output');
+    fs.writeFileSync('./output/old_games.json', JSON.stringify(newGames));
 }
-if (!fs.existsSync('./output')) fs.mkdirSync('./output');
-fs.writeFileSync('./output/old_games.json', JSON.stringify(newGames));
+
+main().catch(err => { console.error(err); process.exit(1); });
